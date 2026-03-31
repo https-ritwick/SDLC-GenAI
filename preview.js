@@ -9,7 +9,7 @@ const Preview = (() => {
   let emptyState  = null;
   let urlDisplay  = null;
   let projectId   = null;
-  let backendUrl  = 'http://localhost:8000';
+  let backendUrl  = window.location.origin;
   let currentDevice = 'desktop';
 
   function init(pid, bUrl) {
@@ -50,12 +50,20 @@ const Preview = (() => {
   }
 
   function show() {
-    if (!projectId) return;
+    if (!projectId || projectId === 'undefined' || projectId === 'null') return;
     const url = previewUrl();
 
-    // Update URL bar
+    // Update URL bar — works for localhost AND cloud (Render, etc.)
     if (urlDisplay) {
-      urlDisplay.textContent = `localhost:${new URL(backendUrl).port || 80}/preview/${projectId}/`;
+      try {
+        const parsed = new URL(backendUrl);
+        const host = parsed.port
+          ? `${parsed.hostname}:${parsed.port}`
+          : parsed.hostname;
+        urlDisplay.textContent = `${host}/preview/${projectId}/`;
+      } catch (_) {
+        urlDisplay.textContent = `preview/${projectId}/`;
+      }
     }
 
     // Show iframe, hide empty state
@@ -71,7 +79,7 @@ const Preview = (() => {
   }
 
   function reload() {
-    if (!projectId) return;
+    if (!projectId || projectId === 'undefined') return;
     if (iframe) {
       const url = previewUrl();
       // Force reload by resetting src
