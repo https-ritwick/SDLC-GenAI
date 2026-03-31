@@ -6,7 +6,10 @@
 
 const App = (() => {
   // ── Config ────────────────────────────────────────────
-  const DEFAULT_BACKEND = 'http://localhost:8000';
+  // Auto-detect backend URL: on Render/production the frontend IS the backend
+  // (FastAPI serves static files). Use window.location.origin so it works
+  // on localhost:8000, Render, and any other deployment automatically.
+  const DEFAULT_BACKEND = window.location.origin;
   let backendUrl = localStorage.getItem('devmind_backend') || DEFAULT_BACKEND;
   let projectId  = localStorage.getItem('devmind_project') || generateId();
 
@@ -17,10 +20,19 @@ const App = (() => {
   let reconnectAttempts = 0;
 
   // DOM refs
-  const wsUrl = () => backendUrl.replace(/^http/, 'ws') + `/ws/${projectId}`;
+  // ws:// for http://, wss:// for https:// (required on Render HTTPS)
+  const wsUrl = () => backendUrl.replace(/^https/, 'wss').replace(/^http(?!s)/, 'ws') + `/ws/${projectId}`;
 
   // ── Bootstrap ─────────────────────────────────────────
   function init() {
+    // On cloud/Render deployment: if stored backendUrl is localhost but current
+    // origin is different, clear the stale URL so we use window.location.origin
+    const storedBackend = localStorage.getItem('devmind_backend');
+    if (storedBackend && storedBackend.includes('localhost') && !window.location.hostname.includes('localhost')) {
+      localStorage.removeItem('devmind_backend');
+      backendUrl = DEFAULT_BACKEND;
+    }
+
     // Save project id
     localStorage.setItem('devmind_project', projectId);
 
