@@ -46,7 +46,7 @@ const Preview = (() => {
   function previewUrl() {
     // Trailing slash is critical: without it, relative CSS/JS in index.html
     // resolves to /preview/styles.css instead of /preview/{id}/styles.css
-    return `${backendUrl}/preview/${projectId}/`;
+    return `${backendUrl}/preview/${projectId}`;
   }
 
   function show() {
