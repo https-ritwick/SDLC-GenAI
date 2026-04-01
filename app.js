@@ -21,7 +21,7 @@ const App = (() => {
 
   // DOM refs
   // ws:// for http://, wss:// for https:// (required on Render HTTPS)
-  const wsUrl = () => backendUrl.replace(/^https/, 'wss').replace(/^http(?!s)/, 'ws') + `/ws/${projectId}`;
+  const wsUrl = () => backendUrl.replace(/^http/, 'ws') + `/ws/${projectId}`;
 
   // ── Bootstrap ─────────────────────────────────────────
   function init() {
