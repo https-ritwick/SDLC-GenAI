@@ -60,7 +60,7 @@ const Preview = (() => {
         const host = parsed.port
           ? `${parsed.hostname}:${parsed.port}`
           : parsed.hostname;
-        urlDisplay.textContent = `${host}/preview/${projectId}/`;
+        urlDisplay.textContent = `${new URL(url).host}/preview/${projectId}/`;
       } catch (_) {
         urlDisplay.textContent = `preview/${projectId}/`;
       }
